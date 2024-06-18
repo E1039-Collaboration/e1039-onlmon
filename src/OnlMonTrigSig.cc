@@ -46,23 +46,27 @@ int OnlMonTrigSig::InitOnlMon(PHCompositeNode* topNode)
 
 int OnlMonTrigSig::InitRunOnlMon(PHCompositeNode* topNode)
 {
-  const double DT = 40/9.0; // 4/9 ns per single count of Taiwan TDC
-  const int NT    = 200;
-  const double T0 = 100.5*DT;
-  const double T1 = 300.5*DT;
-  h2_bi_fpga = new TH2D("h2_bi_fpga", "FPGA Before Inhibit;tdcTime;", NT, T0, T1,  5, 0.5, 5.5);
-  h2_ai_fpga = new TH2D("h2_ai_fpga",  "FPGA After Inhibit;tdcTime;", NT, T0, T1,  5, 0.5, 5.5);
-  h2_bi_nim  = new TH2D("h2_bi_nim" ,  "NIM Before Inhibit;tdcTime;", NT, T0, T1,  5, 0.5, 5.5);
-  h2_ai_nim  = new TH2D("h2_ai_nim" ,   "NIM After Inhibit;tdcTime;", NT, T0, T1,  5, 0.5, 5.5);
+  const double DT = 20/9.0; // 4/9 ns per single count of Taiwan TDC
+  const int NT    = 400;
+  const double T0 = 200.5*DT;
+  const double T1 = 600.5*DT;
+  h2_bi_fpga = new TH2D("h2_bi_fpga", "FPGA Before Inhibit;tdcTime;", NT, T0, T1,  10, 0.5, 10.5);
+  h2_ai_fpga = new TH2D("h2_ai_fpga",  "FPGA After Inhibit;tdcTime;", NT, T0, T1,  10, 0.5, 10.5);
+  h2_bi_nim  = new TH2D("h2_bi_nim" ,  "NIM Before Inhibit;tdcTime;", NT, T0, T1,  10, 0.5, 10.5);
+  h2_ai_nim  = new TH2D("h2_ai_nim" ,   "NIM After Inhibit;tdcTime;", NT, T0, T1,  10, 0.5, 10.5);
   for (int ii = 1; ii <= 5; ii++) {
     ostringstream oss;
     oss << "FPGA " << ii;
-    h2_bi_fpga->GetYaxis()->SetBinLabel(ii, oss.str().c_str());
-    h2_ai_fpga->GetYaxis()->SetBinLabel(ii, oss.str().c_str());
+    h2_bi_fpga->GetYaxis()->SetBinLabel(2*ii, oss.str().c_str());
+    h2_ai_fpga->GetYaxis()->SetBinLabel(2*ii, oss.str().c_str());
+    h2_bi_fpga->GetYaxis()->SetBinLabel(2*ii-1, "in time");
+    h2_ai_fpga->GetYaxis()->SetBinLabel(2*ii-1, "in time");
     oss.str("");
     oss << "NIM " << ii;
-    h2_bi_nim->GetYaxis()->SetBinLabel(ii, oss.str().c_str());
-    h2_ai_nim->GetYaxis()->SetBinLabel(ii, oss.str().c_str());
+    h2_bi_nim->GetYaxis()->SetBinLabel(2*ii, oss.str().c_str());
+    h2_ai_nim->GetYaxis()->SetBinLabel(2*ii, oss.str().c_str());
+    h2_bi_nim->GetYaxis()->SetBinLabel(2*ii-1, "in time");
+    h2_ai_nim->GetYaxis()->SetBinLabel(2*ii-1, "in time");
   }
 
   const double DT2 = 1.0; // 1 ns per single count of v1495 TDC
@@ -97,22 +101,34 @@ int OnlMonTrigSig::ProcessEventOnlMon(PHCompositeNode* topNode)
 
   auto vec = UtilSQHit::FindHitsFast(evt, hit_vec, "BeforeInhNIM");
   for (auto it = vec->begin(); it != vec->end(); it++) {
-    h2_bi_nim->Fill((*it)->get_tdc_time(), (*it)->get_element_id());
+    int     ele = (*it)->get_element_id();
+    double time = (*it)->get_tdc_time();
+    h2_bi_nim->Fill(time, 2*ele);
+    if ((*it)->is_in_time()) h2_bi_nim->Fill(time, 2*ele-1);
   }
 
   vec = UtilSQHit::FindHitsFast(evt, hit_vec, "BeforeInhMatrix");
   for (auto it = vec->begin(); it != vec->end(); it++) {
-    h2_bi_fpga->Fill((*it)->get_tdc_time(), (*it)->get_element_id());
+    int     ele = (*it)->get_element_id();
+    double time = (*it)->get_tdc_time();
+    h2_bi_fpga->Fill(time, 2*ele);
+    if ((*it)->is_in_time()) h2_bi_fpga->Fill(time, 2*ele-1);
   }
 
   vec = UtilSQHit::FindHitsFast(evt, hit_vec, "AfterInhNIM");
   for (auto it = vec->begin(); it != vec->end(); it++) {
-    h2_ai_nim->Fill((*it)->get_tdc_time(), (*it)->get_element_id());
+    int     ele = (*it)->get_element_id();
+    double time = (*it)->get_tdc_time();
+    h2_ai_nim->Fill(time, 2*ele);
+    if ((*it)->is_in_time()) h2_ai_nim->Fill(time, 2*ele-1);
   }
 
   vec = UtilSQHit::FindHitsFast(evt, hit_vec, "AfterInhMatrix");
   for (auto it = vec->begin(); it != vec->end(); it++) {
-    h2_ai_fpga->Fill((*it)->get_tdc_time(), (*it)->get_element_id());
+    int     ele = (*it)->get_element_id();
+    double time = (*it)->get_tdc_time();
+    h2_ai_fpga->Fill(time, 2*ele);
+    if ((*it)->is_in_time()) h2_ai_fpga->Fill(time, 2*ele-1);
   }
 
   vec = UtilSQHit::FindTriggerHitsFast(evt, trig_hit_vec, "RF");
@@ -199,10 +215,11 @@ void OnlMonTrigSig::DrawTH2WithPeakPos(TH2* h2, const double cont_min)
     if (h1->GetMaximum() >= cont_min) {
       oss << "Peak @ " << h1->GetXaxis()->GetBinCenter(h1->GetMaximumBin());
     } else {
-      oss << "No sizable peak";
+      oss << "No peak";
     }
     TText* text = new TText();
     text->SetNDC(true);
+    text->SetTextColor(kGreen);
     text->SetTextAlign(22);
     text->DrawText(0.3, 0.1+(iy-0.5)*0.8/ny, oss.str().c_str());
     // The y-position above assumes that the top & bottom margins are 0.1 each.
