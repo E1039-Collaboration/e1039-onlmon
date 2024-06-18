@@ -221,7 +221,12 @@ void ExtractHodoInTime::DrawPeakTimeVsElement(const std::string txt_in, const st
     else if (det_name.substr(0, 4) == "H4Y1") key = "H4Y1";
     else if (det_name.substr(0, 4) == "H4Y2") key = "H4Y2";
     else if (det_name.substr(0, 2) == "H4"  ) key = "H4X";
-    else if (det_name.substr(0, 2) == "DP"  ) key = "DP";
+    else if (det_name == "DP1TL")             key = "DP1TL";
+    else if (det_name == "DP1TR")             key = "DP1TR";
+    else if (det_name == "DP1BL")             key = "DP1BL";
+    else if (det_name == "DP1BR")             key = "DP1BR";
+    else if (det_name.substr(0, 4) == "DP2T"  ) key = "DP2T";
+    else if (det_name.substr(0, 4) == "DP2B"  ) key = "DP2B";
     else if (det_name.substr(0, 6) == "Before") key = "BeforeInh";
     else if (det_name.substr(0, 5) == "After" ) key = "AfterInh";
     else continue;
