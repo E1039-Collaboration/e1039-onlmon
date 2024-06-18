@@ -30,6 +30,8 @@ ExtractHodoInTime::ExtractHodoInTime(const std::string& name)
     "H4Tu", "H4Td",   "H4Bu", "H4Bd", 
     "H4Y1Ll", "H4Y1Lr", "H4Y1Rl", "H4Y1Rr", 
     "H4Y2Ll", "H4Y2Lr", "H4Y2Rl", "H4Y2Rr", 
+    "DP1TL", "DP1TR", "DP1BL", "DP1BR",
+    "DP2TL", "DP2TR", "DP2BL", "DP2BR",
     "BeforeInhNIM", "BeforeInhMatrix", "AfterInhNIM", "AfterInhMatrix"}
   , m_dir_out("result")
   , m_file(0)
@@ -219,6 +221,7 @@ void ExtractHodoInTime::DrawPeakTimeVsElement(const std::string txt_in, const st
     else if (det_name.substr(0, 4) == "H4Y1") key = "H4Y1";
     else if (det_name.substr(0, 4) == "H4Y2") key = "H4Y2";
     else if (det_name.substr(0, 2) == "H4"  ) key = "H4X";
+    else if (det_name.substr(0, 2) == "DP"  ) key = "DP";
     else if (det_name.substr(0, 6) == "Before") key = "BeforeInh";
     else if (det_name.substr(0, 5) == "After" ) key = "AfterInh";
     else continue;
