@@ -160,8 +160,11 @@ int OnlMonTrigEP::ProcessEventOnlMon(PHCompositeNode* topNode)
   if (is_not_FPGA1) {
     h1_cnt->AddBinContent(21);
     if (emu1) {
-      if (is_FPGA1) h1_eff_NIM3->Fill(1);
-      else          h1_eff_NIM3->Fill(0);
+      int trig_bits_raw = EmulateRawTriggerBits(hit_vec);
+      if (trig_bits_raw & (0x1 << SQEvent::MATRIX1)) h1_eff_NIM3->Fill(1);
+      else                                           h1_eff_NIM3->Fill(0);
+      //if (is_FPGA1) h1_eff_NIM3->Fill(1);
+      //else          h1_eff_NIM3->Fill(0);
     }
     //if (emu1 && ! is_FPGA1) {
     //  cout << "Inefficient event:\n  PosTop: ";
@@ -239,6 +242,46 @@ int OnlMonTrigEP::FindAllMonHist()
   if (! h1_eff_NIM3) return 1;
 
   return 0;
+}
+
+int OnlMonTrigEP::EmulateRawTriggerBits(PHCompositeNode *topNode, const bool in_time_cut)
+{
+  SQHitVector* hit_vec = findNode::getClass<SQHitVector>(topNode, "SQHitVector");
+  if (! hit_vec) return -1;
+  return EmulateRawTriggerBits(hit_vec, in_time_cut);
+}
+
+int OnlMonTrigEP::EmulateRawTriggerBits(SQHitVector* hit_vec, const bool in_time_cut)
+{
+  int trig_bits = 0;
+
+  shared_ptr<SQHitVector> hv_nim(UtilSQHit::FindHits(hit_vec, "AfterInhNIM", in_time_cut));
+  for (auto it = hv_nim->begin(); it != hv_nim->end(); it++) {
+    int ele = (*it)->get_element_id();
+    trig_bits |= 0x1 << (SQEvent::NIM1 + ele - 1);
+  }
+
+  shared_ptr<SQHitVector> hv_fpga(UtilSQHit::FindHits(hit_vec, "AfterInhMatrix", in_time_cut));
+  for (auto it = hv_fpga->begin(); it != hv_fpga->end(); it++) {
+    int ele = (*it)->get_element_id();
+    trig_bits |= 0x1 << (SQEvent::MATRIX1 + ele - 1);
+  }
+
+  //auto vec = UtilSQHit::FindHitsFast(evt, hit_vec, "AfterInhNIM");
+  //for (auto it = vec->begin(); it != vec->end(); it++) {
+  //  if ( (! in_time_cut) || (*it)->is_in_time() ) {
+  //    int ele = (*it)->get_element_id();
+  //    trig_bits |= 0x1 << (SQEvent::NIM1 + ele - 1);
+  //  }
+  //}
+  //vec = UtilSQHit::FindHitsFast(evt, hit_vec, "AfterInhMatrix");
+  //for (auto it = vec->begin(); it != vec->end(); it++) {
+  //  if ( (! in_time_cut) || (*it)->is_in_time() ) {
+  //    int ele = (*it)->get_element_id();
+  //    trig_bits |= 0x1 << (SQEvent::MATRIX1 + ele - 1);
+  //  }
+  //}
+  return trig_bits;
 }
 
 int OnlMonTrigEP::DrawMonitor()

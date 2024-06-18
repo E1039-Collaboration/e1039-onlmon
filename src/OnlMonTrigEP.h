@@ -36,6 +36,9 @@ class OnlMonTrigEP: public OnlMonClient {
   int FindAllMonHist();
   int DrawMonitor();
 
+  static int EmulateRawTriggerBits(PHCompositeNode *topNode, const bool in_time_cut=true);
+  static int EmulateRawTriggerBits(SQHitVector* hit_vec, const bool in_time_cut=true);
+
  private:
   void FindFiredRoads(const int top0bot1, std::vector<SQHit*>* H1X, std::vector<SQHit*>* H2X, std::vector<SQHit*>* H3X, std::vector<SQHit*>* H4X, TriggerRoads* roads, std::vector<TriggerRoad1*>& list_fired_roads);
   std::string PrintHitVec(const std::string title, const std::vector<SQHit*>* vec);
