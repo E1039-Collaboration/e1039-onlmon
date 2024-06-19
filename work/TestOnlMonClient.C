@@ -1,3 +1,4 @@
+R__LOAD_LIBRARY(calibrator)
 R__LOAD_LIBRARY(OnlMon)
 
 int TestOnlMonClient(const int run_id=5848, const int n_dst_ana=1, const int spill_id=-1)
@@ -11,8 +12,10 @@ int TestOnlMonClient(const int run_id=5848, const int n_dst_ana=1, const int spi
   ///
   /// Enable only what you want to test
   ///
+  //se->registerSubsystem(new CalibHodoInTime());
+
   //se->registerSubsystem(new OnlMonMainDaq());
-  //se->registerSubsystem(new OnlMonTrigSig());
+  se->registerSubsystem(new OnlMonTrigSig());
   //se->registerSubsystem(new OnlMonTrigNim());
   //se->registerSubsystem(new OnlMonTrigV1495());
   se->registerSubsystem(new OnlMonTrigRoad ());
