@@ -15,6 +15,7 @@
 #pragma link C++ class OnlMonTrigSig-!;
 #pragma link C++ class OnlMonTrigNim-!;
 #pragma link C++ class OnlMonV1495-!;
+#pragma link C++ class OnlMonV1495TaiwanComp-!;
 #pragma link C++ class OnlMonHodo-!;
 #pragma link C++ class OnlMonH4-!;
 #pragma link C++ class OnlMonCham-!;

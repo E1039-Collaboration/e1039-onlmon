@@ -16,6 +16,7 @@ int OnlMonViewer()
   list_omc.push_back(new OnlMonTrigSig());
   list_omc.push_back(new OnlMonTrigNim());
   list_omc.push_back(new OnlMonTrigV1495());
+  list_omc.push_back(new OnlMonTrigV1495TaiwanComp());
   list_omc.push_back(new OnlMonTrigRoad());
   list_omc.push_back(new OnlMonTrigEP   ());
   list_omc.push_back(new OnlMonQie());

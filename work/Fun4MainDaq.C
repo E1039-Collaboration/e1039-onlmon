@@ -66,6 +66,7 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
     se->registerSubsystem(new OnlMonTrigSig());
     se->registerSubsystem(new OnlMonTrigNim());
     se->registerSubsystem(new OnlMonTrigV1495());
+    se->registerSubsystem(new OnlMonTrigV1495TaiwanComp());
     se->registerSubsystem(new OnlMonTrigRoad());
     se->registerSubsystem(new OnlMonTrigEP   ());
     se->registerSubsystem(new OnlMonQie());
