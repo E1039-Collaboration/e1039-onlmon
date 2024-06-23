@@ -4,7 +4,7 @@
 #include <set>
 #include <TH1D.h>
 #include <TH2D.h>
-#include <TProfile.h>
+#include <TGraphAsymmErrors.h>
 #include <interface_main/SQRun.h>
 #include <interface_main/SQEvent.h>
 #include <interface_main/SQHitVector.h>
@@ -48,6 +48,7 @@ int OnlMonV1495TaiwanComp::InitRunOnlMon(PHCompositeNode* topNode)
     int    det_id   = geom->getDetectorID(det_name);
     int    n_ele    = geom->getPlaneNElements(det_id);
     m_list_det_id.push_back(det_id);
+    //cout << det_name << " " << det_id << " " << n_ele << endl;
 
     oss.str("");
     oss << "h2_comp_" << det_id;
@@ -79,7 +80,6 @@ int OnlMonV1495TaiwanComp::ProcessEventOnlMon(PHCompositeNode* topNode)
   unsigned int n_det = m_list_det_id.size();
   for (unsigned int i_det = 0; i_det < n_det; i_det++) {
     int det_id = m_list_det_id[i_det];
-
     set<int> hit_ele_id_set;
     auto hits = UtilSQHit::FindHitsFast(evt, hit_vec, det_id);
     for (auto it = hits->begin(); it != hits->end(); it++) {
@@ -125,7 +125,7 @@ int OnlMonV1495TaiwanComp::FindAllMonHist()
   for (auto it = m_list_det_id.begin(); it != m_list_det_id.end(); it++) {
     oss.str("");
     oss << "h2_comp_" << *it;
-    TH1* h2 = FindMonHist(oss.str().c_str());
+    TH2* h2 = (TH2*)FindMonHist(oss.str().c_str());
     if (! h2) return 1;
     h2_comp.push_back(h2);
   }
@@ -135,23 +135,74 @@ int OnlMonV1495TaiwanComp::FindAllMonHist()
 
 int OnlMonV1495TaiwanComp::DrawMonitor()
 {
+  cout << "DrawMonitor()" << endl;
+
   OnlMonCanvas* can0 = GetCanvas(0);
   TPad* pad0 = can0->GetMainPad();
 
   unsigned int n_det = m_list_det_id.size();
   pad0->Divide(2, n_det/2);
 
+  int n_ng_v1495  = 0;
+  int n_ng_taiwan = 0;
   for (unsigned int i_det = 0; i_det < n_det; i_det++) {
-    //int det_id = m_list_det_id[i_det];
-
-    TVirtualPad* pad01 = pad0->cd(2*i_det+1);
+    string det_name = m_list_det_name[i_det];
+    bool is_H1 = det_name.substr(0, 2) == "H1";
+    TVirtualPad* pad01 = pad0->cd(i_det+1);
+    pad01->SetMargin(0.1, 0.02, 0.1, 0.1); // (l, r, t, b)
     pad01->SetGrid();
-    h2_comp[i_det]->Draw("colz");
+    DrawStatusPlot(h2_comp[i_det], is_H1, pad01, n_ng_v1495, n_ng_taiwan);
   }
-  //can0->SetStatus(OnlMonCanvas::OK);
-  //int n_evt_all = h1_cnt->GetBinContent(1);
-  //int n_evt_ana = h1_cnt->GetBinContent(2);
-  //can0->AddMessage(TString::Format("N of analyzed events = %d.", n_evt_ana));
-
+  
+  if (n_ng_v1495 == 0 && n_ng_taiwan == 0) {
+    can0->SetStatus(OnlMonCanvas::OK);
+  } else {
+    can0->SetStatus(OnlMonCanvas::WARN);
+    if (n_ng_v1495  > 0) can0->AddMessage(TString::Format("Event frac. > 0.3 on %d elements of V1495 TDCs.", n_ng_v1495));
+    if (n_ng_taiwan > 0) can0->AddMessage(TString::Format("Event frac. > 0.3 on %d elements of Taiwan TDCs.", n_ng_taiwan));
+  }
   return 0;
+}
+
+void OnlMonV1495TaiwanComp::DrawStatusPlot(TH2* h2, const bool is_H1, TVirtualPad* pad, int& n_ng_v1495, int& n_ng_taiwan)
+{
+  TH1* h1_all    = h2->ProjectionX("h1_all"   , HIT_BOTH  , HIT_TAIWAN);
+  TH1* h1_v1495  = h2->ProjectionX("h1_v1495" , HIT_V1495 , HIT_V1495 );
+  TH1* h1_taiwan = h2->ProjectionX("h1_taiwan", HIT_TAIWAN, HIT_TAIWAN);
+  TGraphAsymmErrors* eff_v1495  = new TGraphAsymmErrors(h1_v1495 , h1_all);
+  TGraphAsymmErrors* eff_taiwan = new TGraphAsymmErrors(h1_taiwan, h1_all);
+  eff_v1495 ->SetMarkerStyle(7);
+  eff_taiwan->SetMarkerStyle(7);
+
+  int i_lo = 0;
+  int i_hi = eff_v1495->GetN();
+  if (is_H1) {
+    i_lo += 4;
+    i_hi -= 4;
+  }
+  for (int ii = i_lo; ii < i_hi; ii++) {
+    eff_v1495 ->SetPointEXlow (ii, 0);
+    eff_v1495 ->SetPointEXhigh(ii, 0);
+    eff_taiwan->SetPointEXlow (ii, 0);
+    eff_taiwan->SetPointEXhigh(ii, 0);
+    double v_v1495  = eff_v1495 ->GetX()[ii];
+    double v_taiwan = eff_taiwan->GetX()[ii];
+    if (v_v1495  > 0.3) n_ng_taiwan++; // Not typo.
+    if (v_taiwan > 0.3) n_ng_v1495++;  // Not typo.
+  }
+  eff_taiwan->SetLineColor  (kBlue);
+  eff_taiwan->SetMarkerColor(kBlue);
+
+  string title = h2->GetTitle();
+  title += ";Element ID;Event fraction";
+  //int n_ele = h2->GetNbinsX();
+  TH1* fr = pad->DrawFrame(i_lo+0.5, 0.0,  i_hi+0.5, 1.0, title.c_str());
+  eff_v1495 ->Draw("Psame");
+  eff_taiwan->Draw("Psame");
+
+  TText text;
+  text.SetNDC(true);
+  text.DrawText(0.7, 0.95, "No hit on Taiwan TDC");
+  text.SetTextColor(kBlue);
+  text.DrawText(0.7, 0.90, "No hit on V1495 TDC");
 }

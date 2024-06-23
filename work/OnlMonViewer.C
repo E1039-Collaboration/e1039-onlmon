@@ -16,7 +16,6 @@ int OnlMonViewer()
   list_omc.push_back(new OnlMonTrigSig());
   list_omc.push_back(new OnlMonTrigNim());
   list_omc.push_back(new OnlMonTrigV1495());
-  list_omc.push_back(new OnlMonTrigV1495TaiwanComp());
   list_omc.push_back(new OnlMonTrigRoad());
   list_omc.push_back(new OnlMonTrigEP   ());
   list_omc.push_back(new OnlMonQie());
@@ -24,6 +23,7 @@ int OnlMonViewer()
   list_omc.push_back(new OnlMonV1495(OnlMonV1495::H2X, 1));
   list_omc.push_back(new OnlMonV1495(OnlMonV1495::H3X, 1));
   list_omc.push_back(new OnlMonV1495(OnlMonV1495::H4X, 1));
+  list_omc.push_back(new OnlMonV1495TaiwanComp());
   list_omc.push_back(new OnlMonHodo (OnlMonHodo ::H1X ));
   list_omc.push_back(new OnlMonHodo (OnlMonHodo ::H2X ));
   list_omc.push_back(new OnlMonHodo (OnlMonHodo ::H3X ));

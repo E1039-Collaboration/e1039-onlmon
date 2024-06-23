@@ -9,7 +9,7 @@ class OnlMonV1495TaiwanComp: public OnlMonClient {
   std::vector<int        > m_list_det_id  ;
 
   TH1* h1_cnt;
-  std::vector<TH1*> h2_comp; // X = element ID, Y = comparison status
+  std::vector<TH2*> h2_comp; // X = element ID, Y = comparison status
 
  public:
   OnlMonV1495TaiwanComp();
@@ -24,6 +24,7 @@ class OnlMonV1495TaiwanComp: public OnlMonClient {
   int DrawMonitor();
 
  private:
+  void DrawStatusPlot(TH2* h2, const bool is_H1, TVirtualPad* pad, int& n_ng_v1495, int& n_ng_taiwan);
 };
 
 #endif /* _ONL_MON_V1495_TAIWAN_COMP__H_ */

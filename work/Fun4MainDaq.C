@@ -66,7 +66,6 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
     se->registerSubsystem(new OnlMonTrigSig());
     se->registerSubsystem(new OnlMonTrigNim());
     se->registerSubsystem(new OnlMonTrigV1495());
-    se->registerSubsystem(new OnlMonTrigV1495TaiwanComp());
     se->registerSubsystem(new OnlMonTrigRoad());
     se->registerSubsystem(new OnlMonTrigEP   ());
     se->registerSubsystem(new OnlMonQie());
@@ -74,6 +73,7 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
     se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H2X, 1));
     se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H3X, 1));
     se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H4X, 1));
+    se->registerSubsystem(new OnlMonV1495TaiwanComp());
     se->registerSubsystem(new OnlMonHodo (OnlMonHodo::H1X));
     se->registerSubsystem(new OnlMonHodo (OnlMonHodo::H2X));
     se->registerSubsystem(new OnlMonHodo (OnlMonHodo::H3X));
