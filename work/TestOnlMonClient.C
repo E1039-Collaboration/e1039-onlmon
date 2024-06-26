@@ -1,7 +1,7 @@
 R__LOAD_LIBRARY(calibrator)
 R__LOAD_LIBRARY(OnlMon)
 
-int TestOnlMonClient(const int run_id=5848, const int n_dst_ana=1, const int spill_id=-1)
+int TestOnlMonClient(const int run_id=6047, const int n_dst_ana=1, const int spill_id=-1)
 {
   gSystem->Umask(0002);
   UtilOnline::SetOnlMonDir("/dev/shm/$USER/onlmon/plots");
@@ -20,14 +20,14 @@ int TestOnlMonClient(const int run_id=5848, const int n_dst_ana=1, const int spi
   //se->registerSubsystem(new OnlMonTrigSig());
   //se->registerSubsystem(new OnlMonTrigNim());
   //se->registerSubsystem(new OnlMonTrigV1495());
-  //se->registerSubsystem(new OnlMonTrigRoad ());
-  //se->registerSubsystem(new OnlMonTrigEP   ());
+  se->registerSubsystem(new OnlMonTrigRoad ());
+  se->registerSubsystem(new OnlMonTrigEP   ());
   //se->registerSubsystem(new OnlMonQie());
   //se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H1X, 1));
   //se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H2X, 1));
   //se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H3X, 1));
   //se->registerSubsystem(new OnlMonV1495(OnlMonV1495::H4X, 1));
-  se->registerSubsystem(new OnlMonV1495TaiwanComp());
+  //se->registerSubsystem(new OnlMonV1495TaiwanComp());
   //se->registerSubsystem(new OnlMonHodo (OnlMonHodo::H1X));
   //se->registerSubsystem(new OnlMonHodo (OnlMonHodo::H2X));
   //se->registerSubsystem(new OnlMonHodo (OnlMonHodo::H3X));
