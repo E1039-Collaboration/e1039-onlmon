@@ -13,6 +13,8 @@ int TestOnlMonClient(const int run_id=5848, const int n_dst_ana=1, const int spi
   /// Enable only what you want to test
   ///
   //se->registerSubsystem(new CalibHodoInTime());
+  //se->registerSubsystem(new CalibHitElementPos());
+  //se->registerSubsystem(new CalibDriftDist());
 
   //se->registerSubsystem(new OnlMonMainDaq());
   //se->registerSubsystem(new OnlMonTrigSig());

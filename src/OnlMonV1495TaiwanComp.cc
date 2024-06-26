@@ -20,12 +20,15 @@
 using namespace std;
 
 OnlMonV1495TaiwanComp::OnlMonV1495TaiwanComp()
-  : m_trig_mask(1023) // 1023 = 0b1111111111 = all triggers
-  , m_list_det_name{ "H1T", "H1B", "H2T", "H2B", "H3T", "H3B", "H4T", "H4B" }
+  : m_list_det_name{ "H1T", "H1B", "H2T", "H2B", "H3T", "H3B", "H4T", "H4B" }
 {
   NumCanvases(1);
   Name("OnlMonV1495TaiwanComp");
   Title("V1495 vs Taiwan TDCs");
+  GeomSvc* geom = GeomSvc::instance();
+  for (auto it = m_list_det_name.begin(); it != m_list_det_name.end(); it++) {
+    m_list_det_id.push_back( geom->getDetectorID(*it) );
+  }
 }
 
 int OnlMonV1495TaiwanComp::InitOnlMon(PHCompositeNode* topNode)
@@ -38,16 +41,12 @@ int OnlMonV1495TaiwanComp::InitRunOnlMon(PHCompositeNode* topNode)
   h1_cnt = new TH1D("h1_cnt", ";Type;Count", 15, 0.5, 15.5);
   RegisterHist(h1_cnt);
 
-  //OnlMonParam param(this);
-  //m_trig_mask = param.GetIntParam("TRIGGER_MASK");
-
   ostringstream oss;
   GeomSvc* geom = GeomSvc::instance();
   for (auto it = m_list_det_name.begin(); it != m_list_det_name.end(); it++) {
     string det_name = *it;
     int    det_id   = geom->getDetectorID(det_name);
     int    n_ele    = geom->getPlaneNElements(det_id);
-    m_list_det_id.push_back(det_id);
     //cout << det_name << " " << det_id << " " << n_ele << endl;
 
     oss.str("");
@@ -185,8 +184,8 @@ void OnlMonV1495TaiwanComp::DrawStatusPlot(TH2* h2, const bool is_H1, TVirtualPa
     eff_v1495 ->SetPointEXhigh(ii, 0);
     eff_taiwan->SetPointEXlow (ii, 0);
     eff_taiwan->SetPointEXhigh(ii, 0);
-    double v_v1495  = eff_v1495 ->GetX()[ii];
-    double v_taiwan = eff_taiwan->GetX()[ii];
+    double v_v1495  = eff_v1495 ->GetY()[ii];
+    double v_taiwan = eff_taiwan->GetY()[ii];
     if (v_v1495  > 0.3) n_ng_taiwan++; // Not typo.
     if (v_taiwan > 0.3) n_ng_v1495++;  // Not typo.
   }
@@ -196,7 +195,7 @@ void OnlMonV1495TaiwanComp::DrawStatusPlot(TH2* h2, const bool is_H1, TVirtualPa
   string title = h2->GetTitle();
   title += ";Element ID;Event fraction";
   //int n_ele = h2->GetNbinsX();
-  TH1* fr = pad->DrawFrame(i_lo+0.5, 0.0,  i_hi+0.5, 1.0, title.c_str());
+  pad->DrawFrame(i_lo+0.5, 0.0,  i_hi+0.5, 1.0, title.c_str());
   eff_v1495 ->Draw("Psame");
   eff_taiwan->Draw("Psame");
 

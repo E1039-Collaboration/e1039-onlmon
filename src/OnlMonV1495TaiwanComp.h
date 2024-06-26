@@ -4,7 +4,6 @@
 
 class OnlMonV1495TaiwanComp: public OnlMonClient {
   typedef enum { HIT_BOTH = 1, HIT_V1495 = 2, HIT_TAIWAN = 3 } CompStatus_t;
-  unsigned short m_trig_mask;
   std::vector<std::string> m_list_det_name;
   std::vector<int        > m_list_det_id  ;
 
