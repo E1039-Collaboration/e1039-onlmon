@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <TStyle.h>
 #include <TH2D.h>
+#include <THStack.h>
+#include <TLegend.h>
 #include <TGraphAsymmErrors.h>
 #include <interface_main/SQEvent.h>
 #include <interface_main/SQHitVector.h>
@@ -44,10 +46,15 @@ int OnlMonTrigNim::InitRunOnlMon(PHCompositeNode* topNode)
   h1_cnt->GetXaxis()->SetBinLabel(10, "NIM1");
   RegisterHist(h1_cnt);
 
-  h2_purity = new TH2D("h2_purity", "", 3, 0.5, 3.5,  2, -0.5, 1.5); // X = NIM1...5, Y = NG/OK
-  h2_eff    = new TH2D("h2_eff"   , "", 3, 0.5, 3.5,  2, -0.5, 1.5); // X = NIM1...5, Y = NG/OK
+  h2_purity = new TH2D("h2_purity", "", 3, 0.5, 3.5,  2, -0.5, 1.5); // X = NIM1...3, Y = NG/OK
+  h2_eff    = new TH2D("h2_eff"   , "", 3, 0.5, 3.5,  2, -0.5, 1.5); // X = NIM1...3, Y = NG/OK
   RegisterHist(h2_purity);
   RegisterHist(h2_eff);
+
+  h2_purity_ng = new TH2D("h2_purity_ng", "", 3, 0.5, 3.5,  8, 0.5, 8.5); // X = NIM1...3, Y = planes
+  h2_eff_ng    = new TH2D("h2_eff_ng"   , "", 3, 0.5, 3.5,  3, 0.5, 3.5); // X = NIM1...3, Y = triggers
+  RegisterHist(h2_purity_ng);
+  RegisterHist(h2_eff_ng);
 
   return Fun4AllReturnCodes::EVENT_OK;
 }
@@ -116,20 +123,76 @@ int OnlMonTrigNim::ProcessEventOnlMon(PHCompositeNode* topNode)
   if (emu_3 ) h1_cnt->AddBinContent(8);
   
   /// Check the purity
-  if (trig_nim1) h2_purity->Fill(1, (emu_1 ? 1 : 0));
-  if (trig_nim2) h2_purity->Fill(2, (emu_2 ? 1 : 0));
-  if (trig_nim3) h2_purity->Fill(3, (emu_3 ? 1 : 0));
+  if (trig_nim1) {
+    h2_purity->Fill(1, (emu_1 ? 1 : 0));
+    if (! emu_1) {
+      h2_purity_ng->Fill(1, 0); // Total count in underflow bin
+      if (n_y1t  == 0) h2_purity_ng->Fill(1, 1);
+      if (n_y2t  == 0) h2_purity_ng->Fill(1, 2);
+      if (n_y41t == 0) h2_purity_ng->Fill(1, 3);
+      if (n_y42t == 0) h2_purity_ng->Fill(1, 4);
+      if (n_y1b  == 0) h2_purity_ng->Fill(1, 5);
+      if (n_y2b  == 0) h2_purity_ng->Fill(1, 6);
+      if (n_y41b == 0) h2_purity_ng->Fill(1, 7);
+      if (n_y42b == 0) h2_purity_ng->Fill(1, 8);
+    }
+  }
+  if (trig_nim2) {
+    h2_purity->Fill(2, (emu_2 ? 1 : 0));
+    if (! emu_2) {
+      h2_purity_ng->Fill(2, 0); // Total count in underflow bin
+      if (n_x1t == 0) h2_purity_ng->Fill(2, 1);
+      if (n_x2t == 0) h2_purity_ng->Fill(2, 2);
+      if (n_x3t == 0) h2_purity_ng->Fill(2, 3);
+      if (n_x4t == 0) h2_purity_ng->Fill(2, 4);
+      if (n_x1b == 0) h2_purity_ng->Fill(2, 5);
+      if (n_x2b == 0) h2_purity_ng->Fill(2, 6);
+      if (n_x3b == 0) h2_purity_ng->Fill(2, 7);
+      if (n_x4b == 0) h2_purity_ng->Fill(2, 8);
+    }
+  }
+  if (trig_nim3) {
+    h2_purity->Fill(3, (emu_3 ? 1 : 0));
+    if (! emu_3) {
+      h2_purity_ng->Fill(3, 0); // Total count in underflow bin
+      if (n_x1t == 0) h2_purity_ng->Fill(3, 1);
+      if (n_x2t == 0) h2_purity_ng->Fill(3, 2);
+      if (n_x3t == 0) h2_purity_ng->Fill(3, 3);
+      if (n_x4t == 0) h2_purity_ng->Fill(3, 4);
+      if (n_x1b == 0) h2_purity_ng->Fill(3, 5);
+      if (n_x2b == 0) h2_purity_ng->Fill(3, 6);
+      if (n_x3b == 0) h2_purity_ng->Fill(3, 7);
+      if (n_x4b == 0) h2_purity_ng->Fill(3, 8);
+    }
+  }
 
   /// Check the efficiency
   int trig_bits_raw = OnlMonTrigEP::EmulateRawTriggerBits(hit_vec);
   if (trig_fpga1 || trig_nim2 || trig_nim3) { // X triggers
     h1_cnt->AddBinContent(9);
-    if (emu_1) h2_eff->Fill(1, (trig_bits_raw & (0x1 << SQEvent::NIM1) ? 1 : 0));
+    if (emu_1) {
+      bool nim1_raw = trig_bits_raw & (0x1 << SQEvent::NIM1);
+      h2_eff->Fill(1, (nim1_raw ? 1 : 0));
+      if (! nim1_raw) {
+        h2_eff_ng->Fill(1, 0); // Total count in underflow bin
+        if (trig_fpga1) h2_eff_ng->Fill(1, 1);
+        if (trig_nim2 ) h2_eff_ng->Fill(1, 2);
+        if (trig_nim3 ) h2_eff_ng->Fill(1, 3);
+      }
+    }
   }
   if (trig_nim1) { // Y triggers
     h1_cnt->AddBinContent(10);
-    if (emu_2) h2_eff->Fill(2, (trig_bits_raw & (0x1 << SQEvent::NIM2) ? 1 : 0));
-    if (emu_3) h2_eff->Fill(3, (trig_bits_raw & (0x1 << SQEvent::NIM3) ? 1 : 0));
+    if (emu_2) {
+      bool nim2_raw = trig_bits_raw & (0x1 << SQEvent::NIM2);
+      h2_eff->Fill(2, (nim2_raw ? 1 : 0));
+      //if (! nim2_raw) {
+      //}
+    }
+    if (emu_3) {
+      bool nim3_raw = trig_bits_raw & (0x1 << SQEvent::NIM3);
+      h2_eff->Fill(3, (nim3_raw ? 1 : 0));
+    }
   }
 
   return Fun4AllReturnCodes::EVENT_OK;
@@ -150,6 +213,12 @@ int OnlMonTrigNim::FindAllMonHist()
 
   h2_eff = (TH2*)FindMonHist("h2_eff");
   if (! h2_eff) return 1;
+
+  h2_purity_ng = (TH2*)FindMonHist("h2_purity_ng");
+  if (! h2_purity_ng) return 1;
+
+  h2_eff_ng = (TH2*)FindMonHist("h2_eff_ng");
+  if (! h2_eff_ng) return 1;
 
   return 0;
 }
@@ -173,7 +242,11 @@ int OnlMonTrigNim::DrawMonitor()
   text.DrawText(0.60, 0.79, "NIM3 = X1234T && X1234B");
 
   TVirtualPad* pad02 = pad0->cd(2);
-  pad02->SetGrid();
+  pad02->Divide(2, 1);
+  TVirtualPad* pad021 = pad02->cd(1);
+  pad021->SetGrid();
+
+  //pad02->SetGrid();
   TH1* h1_pur_all = h2_purity->ProjectionX("h1_pur_all");
   TH1* h1_pur_ok  = h2_purity->ProjectionX("h1_pur_ok", 2, 2);
   TGraphAsymmErrors* gr_pur = new TGraphAsymmErrors(h1_pur_ok, h1_pur_all);
@@ -185,8 +258,40 @@ int OnlMonTrigNim::DrawMonitor()
   gr_pur->Draw("AP");
   gr_pur->GetYaxis()->SetRangeUser(0, 1);
 
+  TVirtualPad* pad022 = pad02->cd(2);
+  pad022->SetGrid();
+  TLegend* leg022 = new TLegend(0.9, 0.6, 0.99, 0.9);
+  leg022->SetHeader("  NIM");
+
+  for (int nim = 1; nim <= 3; nim++) {
+    ostringstream oss;
+    oss << "h1_purity_ng_nim" << nim;
+    TH1* h1 = h2_purity_ng->ProjectionY(oss.str().c_str(), nim, nim);
+    h1->Scale(100 / h1->GetBinContent(0));
+    h1->SetLineColor(nim);
+    if (nim == 1) {
+      const char* NAME[8] = { "1T", "2T", "3T", "4T", "1B", "2B", "3B", "4B" };
+      for (int ii = 0; ii < 8; ii++) h1->GetXaxis()->SetBinLabel(ii+1, NAME[ii]);
+      h1->Draw("HIST");
+      h1->GetXaxis()->SetLabelSize(0.08);
+      h1->GetYaxis()->SetRangeUser(0, 100);
+      h1->SetTitle("Planes with no hit in impure events;;Rate (%)");
+    } else {
+      h1->Draw("HISTsame");
+    }
+
+    oss.str("");
+    oss << " " << nim;
+    leg022->AddEntry(h1, oss.str().c_str(), "l");
+  }
+  leg022->Draw();
+
   TVirtualPad* pad03 = pad0->cd(3);
-  pad03->SetGrid();
+  //pad03->SetGrid();
+  pad03->Divide(2, 1);
+  TVirtualPad* pad031 = pad03->cd(1);
+  pad031->SetGrid();
+
   TH1* h1_eff_all = h2_eff->ProjectionX("h1_eff_all");
   TH1* h1_eff_ok  = h2_eff->ProjectionX("h1_eff_ok", 2, 2);
   TGraphAsymmErrors* gr_eff = new TGraphAsymmErrors(h1_eff_ok, h1_eff_all);
@@ -197,6 +302,18 @@ int OnlMonTrigNim::DrawMonitor()
   gr_eff->GetXaxis()->SetLabelSize(0.08);
   gr_eff->Draw("AP");
   gr_eff->GetYaxis()->SetRangeUser(0, 1);
+
+  TVirtualPad* pad032 = pad03->cd(2);
+  pad032->SetGrid();
+  TH1* h1_eff_ng_nim1 = h2_eff_ng->ProjectionY("h1_eff_ng_nim1", 1, 1);
+  h1_eff_ng_nim1->Scale(100 / h1_eff_ng_nim1->GetBinContent(0));
+  h1_eff_ng_nim1->SetTitle("Trigger types that took ineff. NIM1 events;;Rate (%)");
+  h1_eff_ng_nim1->GetXaxis()->SetBinLabel(1, "FPGA1");
+  h1_eff_ng_nim1->GetXaxis()->SetBinLabel(2, "NIM2");
+  h1_eff_ng_nim1->GetXaxis()->SetBinLabel(3, "INM3");
+  h1_eff_ng_nim1->GetXaxis()->SetLabelSize(0.08);
+  h1_eff_ng_nim1->Draw("HIST");
+  h1_eff_ng_nim1->GetYaxis()->SetRangeUser(0, 100);
 
   OnlMonCanvas::MonStatus_t status = OnlMonCanvas::OK;
   for (int i_pt = 0; i_pt < gr_pur->GetN(); i_pt++) {

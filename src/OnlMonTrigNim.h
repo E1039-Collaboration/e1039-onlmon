@@ -13,6 +13,8 @@ class OnlMonTrigNim: public OnlMonClient {
   TH1* h1_cnt;
   TH2* h2_purity;
   TH2* h2_eff;
+  TH2* h2_purity_ng;
+  TH2* h2_eff_ng;
 
  public:
   OnlMonTrigNim();
