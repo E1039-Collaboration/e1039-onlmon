@@ -41,6 +41,7 @@ int OnlMonV1495TaiwanComp::InitRunOnlMon(PHCompositeNode* topNode)
   h1_cnt = new TH1D("h1_cnt", ";Type;Count", 15, 0.5, 15.5);
   RegisterHist(h1_cnt);
 
+  h2_comp.clear();
   ostringstream oss;
   GeomSvc* geom = GeomSvc::instance();
   for (auto it = m_list_det_name.begin(); it != m_list_det_name.end(); it++) {
@@ -120,6 +121,7 @@ int OnlMonV1495TaiwanComp::FindAllMonHist()
   h1_cnt = FindMonHist("h1_cnt");
   if (! h1_cnt) return 1;
 
+  h2_comp.clear();
   ostringstream oss;
   for (auto it = m_list_det_id.begin(); it != m_list_det_id.end(); it++) {
     oss.str("");

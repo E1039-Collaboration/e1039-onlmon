@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TProfile.h>
 #include <THStack.h>
 #include <TCanvas.h>
 #include <TPaveText.h>
@@ -49,7 +50,7 @@ int OnlMonQie::InitRunOnlMon(PHCompositeNode* topNode)
   int num_inte;
   double* list_inte;
   UtilBeam::ListOfRfValues(num_inte, list_inte);
-  h2_inte_rf = new TH2D("h2_inte_rf", "RF intensity;RF intensity;RF+nn", num_inte-1, list_inte, N_RF_INTE, -N_RF_INTE/2.0, N_RF_INTE/2.0);
+  h2_inte_rf = new TH2D("h2_inte_rf", "RF intensity;RF+nn;RF intensity", N_RF_INTE, -N_RF_INTE/2.0, N_RF_INTE/2.0, num_inte-1, list_inte);
 
   RegisterHist(h1_evt_status);
   //RegisterHist(h1_trig_cnt);
@@ -91,7 +92,7 @@ int OnlMonQie::ProcessEventOnlMon(PHCompositeNode* topNode)
   bool found_zero_pm08 = false;
   for (int ii = -N_RF_INTE/2; ii <= N_RF_INTE/2; ii++) {
     int inte = evt->get_qie_rf_intensity(ii);
-    h2_inte_rf->Fill(inte, ii);
+    h2_inte_rf->Fill(ii, inte);
     if (inte == 0) {
       if (abs(ii) <= 13) found_zero_pm13 = true;
       if (abs(ii) <=  8) found_zero_pm08 = true;
@@ -145,7 +146,14 @@ int OnlMonQie::DrawMonitor()
   }
   //can0->SetStatus(OnlMonCanvas::OK);
 
-  h2_inte_rf->GetXaxis()->SetRangeUser(0.0, 2000.0);
+  for (int iy = 1; iy <= h2_inte_rf->GetNbinsY(); iy++) {
+    double dy = h2_inte_rf->GetYaxis()->GetBinWidth(iy);
+    for (int ix = 1; ix <= h2_inte_rf->GetNbinsX(); ix++) {
+      double cont = h2_inte_rf->GetBinContent(ix, iy);
+      h2_inte_rf->SetBinContent(ix, iy, cont / dy);
+    }
+  }
+  h2_inte_rf->GetYaxis()->SetRangeUser(5.0, 2000.0);
 
   OnlMonCanvas* can1 = GetCanvas(1);
   TPad* pad1 = can1->GetMainPad();
@@ -153,24 +161,28 @@ int OnlMonQie::DrawMonitor()
 
   TVirtualPad* pad11 = pad1->cd(1);
   pad11->SetGrid();
-  pad11->SetLogx();
+  pad11->SetLogy();
   h2_inte_rf->Draw("colz");
+  TProfile* pr_inte_rf = h2_inte_rf->ProfileX("pr_inte_rf");
+  pr_inte_rf->SetLineColor(kBlack);
+  pr_inte_rf->Draw("E1same");
 
   TVirtualPad* pad12 = pad1->cd(2);
   pad12->SetGrid();
   pad12->SetLogx();
-  int bin = h2_inte_rf->GetYaxis()->FindBin(0.0); // RF+00
-  TH1* h1_p01 = h2_inte_rf->ProjectionX("h1_p01", bin+1, bin+1);
-  TH1* h1_p00 = h2_inte_rf->ProjectionX("h1_p00", bin  , bin  );
-  TH1* h1_m01 = h2_inte_rf->ProjectionX("h1_m01", bin-1, bin-1);
-  h1_p00->SetLineWidth(2);
+  int bin = h2_inte_rf->GetXaxis()->FindBin(0.0); // RF+00
+  TH1* h1_p01 = h2_inte_rf->ProjectionY("h1_p01", bin+1, bin+1);
+  TH1* h1_p00 = h2_inte_rf->ProjectionY("h1_p00", bin  , bin  );
+  TH1* h1_m01 = h2_inte_rf->ProjectionY("h1_m01", bin-1, bin-1);
+  h1_p00->SetLineWidth(3);
+  h1_p01->SetLineWidth(2);
   h1_p00->SetLineColor(kRed);
   h1_p01->SetLineColor(kBlue);
-  h1_m01->SetLineColor(kBlack);
-  THStack* hs = new THStack("hs", "RF intensity @ RF+nn;RF intensity;N of events");
-  hs->Add(h1_p00, "l");
-  hs->Add(h1_p01, "l");
-  hs->Add(h1_m01, "l");
+  h1_m01->SetLineColor(kGreen);
+  THStack* hs = new THStack("hs", "RF intensity @ RF+nn;RF intensity;N of events / Bin width");
+  hs->Add(h1_p00);
+  hs->Add(h1_p01);
+  hs->Add(h1_m01);
   hs->Draw("nostack");
   TLegend* leg = new TLegend(0.8, 0.8, 0.99, 0.99);
   leg->AddEntry(h1_p01, "RF+01", "l");

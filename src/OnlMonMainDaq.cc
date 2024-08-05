@@ -246,6 +246,8 @@ int OnlMonMainDaq::DrawMonitor()
   int nhit_pl_err  = param.GetIntParam("N_HIT_PL_ERROR");
   int nevt_sp_warn = param.GetIntParam("N_EVT_SP_WARN");
   int nevt_sp_err  = param.GetIntParam("N_EVT_SP_ERROR");
+  int t_deco_warn  = param.GetIntParam("TIME_DECO_WARN");
+  int t_deco_err   = param.GetIntParam("TIME_DECO_ERROR");
 
   UtilHist::AutoSetRange(h1_n_taiwan);
 
@@ -507,10 +509,10 @@ int OnlMonMainDaq::DrawMonitor()
   }
   double time = 0;
   for (int ih = 0; ih < 5; ih++) time += EvalAverageOfFilledBins(h1[ih]);
-  if (time > 70) {
+  if (time > t_deco_err) {
     can2->SetWorseStatus(OnlMonCanvas::ERROR);
     can2->AddMessage(TString::Format("Time per spill = %.1f > 70.", time).Data());
-  } else if (time > 60) {
+  } else if (time > t_deco_warn) {
     can2->SetWorseStatus(OnlMonCanvas::WARN);
     can2->AddMessage(TString::Format("Time per spill = %.1f > 60.", time).Data());
   }
