@@ -142,7 +142,7 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
   }
 
   if (std_mode) {
-    Fun4AllSRawEventOutputManager *om_sraw = new Fun4AllSRawEventOutputManager("/data4/e1039_data/online");
+    Fun4AllSpillSRawEventOutputManager *om_sraw = new Fun4AllSpillSRawEventOutputManager("/data4/e1039_data/online");
     om_sraw->Verbosity(deco_verb);
     om_sraw->EnableDB();
     se->registerOutputManager(om_sraw);
