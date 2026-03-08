@@ -4,6 +4,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TProfile.h>
+#include <TLine.h>
 #include <interface_main/SQRun.h>
 #include <interface_main/SQEvent.h>
 #include <interface_main/SQHitVector.h>

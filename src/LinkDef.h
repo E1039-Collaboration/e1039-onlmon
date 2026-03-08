@@ -25,12 +25,9 @@
 #pragma link C++ class OnlMonTrigRoad-!;
 #pragma link C++ class OnlMonTrigV1495-!;
 #pragma link C++ class OnlMonTrigEP-!;
+#pragma link C++ class OnlMonRecoGpu-!;
 
 #pragma link C++ class ExtractHodoInTime-!;
 #pragma link C++ class ExtractV1495InTime-!;
-
-#pragma link C++ class TriggerRoad1-!;
-#pragma link C++ class TriggerRoads-!;
-#pragma link C++ class TriggerRoadset-!;
 
 #endif

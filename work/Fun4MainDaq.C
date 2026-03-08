@@ -3,7 +3,7 @@
 R__LOAD_LIBRARY(calibrator)
 R__LOAD_LIBRARY(decoder_maindaq)
 R__LOAD_LIBRARY(OnlMon)
-R__LOAD_LIBRARY(pheve_modules)
+//R__LOAD_LIBRARY(pheve_modules)
 //R__LOAD_LIBRARY(ktracker)
 
 int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=false)
@@ -13,7 +13,7 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
   const bool output_spill_dst = true;
   const bool output_nim4_dst = true;
   const bool use_onlmon = true;
-  const bool use_evt_disp = true;
+  const bool use_evt_disp = false;
 
   const char* deco_mode = gSystem->Getenv("E1039_DECODER_MODE");
   bool std_mode = (deco_mode && strcmp(deco_mode, "std") == 0);
@@ -40,7 +40,7 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
   gSystem->mkdir(UtilOnline::GetDstFileDir().c_str(), true);
 
   OnlMonServer* se = OnlMonServer::instance();
-  //se->Verbosity(1);
+  //se->Verbosity(10);
   se->setRun(run_id); // This sets the `RUNNUMBER` flag.
   se->SetOnline(is_online);
 
@@ -128,18 +128,19 @@ int Fun4MainDaq(const int run_id=46, const int nevent=0, const bool is_online=fa
     se->registerOutputManager(om_spdst);
   }
 
-  if (use_evt_disp) {
-    se->registerSubsystem(new EvtDispFilter(1000, 1)); // (step, max per spill)
-
-    oss.str("");
-    oss << "/data4/e1039_data/online/evt_disp";
-    gSystem->mkdir(oss.str().c_str(), true);
-    oss << "/run_" << setfill('0') << setw(6) << run_id << "_evt_disp.root";
-    Fun4AllDstOutputManager *om_eddst = new Fun4AllDstOutputManager("EDDST", oss.str());
-    om_eddst->EnableRealTimeSave();
-    om_eddst->AddEventSelector("EvtDispFilter");
-    se->registerOutputManager(om_eddst);
-  }
+//  Disabled this section because EvtDispFilter is not available in e1039-core now.
+//  if (use_evt_disp) {
+//    se->registerSubsystem(new EvtDispFilter(1000, 1)); // (step, max per spill)
+//
+//    oss.str("");
+//    oss << "/data4/e1039_data/online/evt_disp";
+//    gSystem->mkdir(oss.str().c_str(), true);
+//    oss << "/run_" << setfill('0') << setw(6) << run_id << "_evt_disp.root";
+//    Fun4AllDstOutputManager *om_eddst = new Fun4AllDstOutputManager("EDDST", oss.str());
+//    om_eddst->EnableRealTimeSave();
+//    om_eddst->AddEventSelector("EvtDispFilter");
+//    se->registerOutputManager(om_eddst);
+//  }
 
   if (std_mode) {
     Fun4AllSpillSRawEventOutputManager *om_sraw = new Fun4AllSpillSRawEventOutputManager("/data4/e1039_data/online");

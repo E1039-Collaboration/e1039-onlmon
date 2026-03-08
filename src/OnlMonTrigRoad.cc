@@ -226,7 +226,7 @@ void OnlMonTrigRoad::SetDet()
   }
 }
 
-void OnlMonTrigRoad::CountFiredRoads(const int top0bot1, vector<SQHit*>* H1X, vector<SQHit*>* H2X, vector<SQHit*>* H3X, vector<SQHit*>* H4X, TriggerRoads* roads, TH1* h1_rs_cnt)
+void OnlMonTrigRoad::CountFiredRoads(const int top0bot1, vector<SQHit*>* H1X, vector<SQHit*>* H2X, vector<SQHit*>* H3X, vector<SQHit*>* H4X, UtilTrigger::TrigRoads* roads, TH1* h1_rs_cnt)
 {
   unordered_set<int> set_ele1;
   unordered_set<int> set_ele2;
@@ -258,7 +258,7 @@ void OnlMonTrigRoad::CountFiredRoads(const int top0bot1, vector<SQHit*>* H1X, ve
   }
 
   for (unsigned int ir = 0 ; ir < roads->GetNumRoads(); ir++) {
-    TriggerRoad1* road = roads->GetRoad(ir);
+    UtilTrigger::TrigRoad* road = roads->GetRoad(ir);
     if (set_ele1.find(road->H1X) != set_ele1.end() &&
         set_ele2.find(road->H2X) != set_ele2.end() &&
         set_ele3.find(road->H3X) != set_ele3.end() &&

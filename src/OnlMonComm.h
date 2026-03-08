@@ -6,6 +6,7 @@ class TSocket;
 class OnlMonComm {
  public:
   typedef enum { SP_ALL, SP_LAST, SP_RANGE } SpillMode_t;
+  typedef std::vector<int> SpillList_t;
 
  private:
   static OnlMonComm* m_inst;
@@ -19,7 +20,6 @@ class OnlMonComm {
   bool m_sp_sel; //< True if spills are selectable
   int m_n_sp_sel_max; //< Max number of spills for which spills are kept selectable.
 
-  typedef std::vector<int> SpillList_t;
   SpillList_t m_list_sp;
 
  public:
@@ -47,6 +47,7 @@ class OnlMonComm {
   void ClearSpill() { m_list_sp.clear(); } //< Used in the server process
   void AddSpill(const int id); //< Used in the server process
   void FindFullSpillRange(int& id_min, int& id_max); //< Used in the server process
+  SpillList_t* FindSpillList() { return &m_list_sp; } //< Used in the server process
 
   int ReceiveFullSpillRange(); //< Used in the viewer process
   void GetFullSpillRange(int& id_min, int& id_max); //< Used in the viewer process

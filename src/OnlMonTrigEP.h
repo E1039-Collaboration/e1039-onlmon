@@ -2,7 +2,7 @@
 #define _ONL_MON_TRIG_EP__H_
 #include <interface_main/SQEvent.h>
 #include <interface_main/SQHitVector.h>
-#include "TriggerRoadset.h"
+#include <UtilAna/TrigRoadset.h>
 #include "OnlMonClient.h"
 
 /// OnlMonClient to estimate the efficiency and the purity of FPGA trigger.
@@ -13,7 +13,7 @@ class OnlMonTrigEP: public OnlMonClient {
   static const int N_DET = 8;
 
  private:
-  TriggerRoadset roadset;
+  UtilTrigger::TrigRoadset roadset;
   std::string list_det_name[N_DET];
   int         list_det_id  [N_DET];
 
@@ -40,7 +40,7 @@ class OnlMonTrigEP: public OnlMonClient {
   static int EmulateRawTriggerBits(SQHitVector* hit_vec, const bool in_time_cut=true);
 
  private:
-  void FindFiredRoads(const int top0bot1, std::vector<SQHit*>* H1X, std::vector<SQHit*>* H2X, std::vector<SQHit*>* H3X, std::vector<SQHit*>* H4X, TriggerRoads* roads, std::vector<TriggerRoad1*>& list_fired_roads);
+  void FindFiredRoads(const int top0bot1, std::vector<SQHit*>* H1X, std::vector<SQHit*>* H2X, std::vector<SQHit*>* H3X, std::vector<SQHit*>* H4X, UtilTrigger::TrigRoads* roads, std::vector<UtilTrigger::TrigRoad*>& list_fired_roads);
   std::string PrintHitVec(const std::string title, const std::vector<SQHit*>* vec);
   void SetDet();
 };

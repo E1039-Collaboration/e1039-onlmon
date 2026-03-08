@@ -257,6 +257,13 @@ void OnlMonServer::HandleConnection(TSocket* sock)
         ostringstream oss;
         oss << id_min << " " << id_max << " " << comm->GetSpillSelectability();
         sock->Send(oss.str().c_str());
+      } else if (msg_str == "SpillList") {
+        if (Verbosity() > 1) cout << "  SpillList." << endl;
+        OnlMonComm* comm = OnlMonComm::instance();
+        OnlMonComm::SpillList_t* list_sp = comm->FindSpillList();
+        ostringstream oss;
+        for (auto it = list_sp->begin(); it != list_sp->end(); it++) oss << *it << " ";
+        sock->Send(oss.str().c_str());
       } else if (msg_str.substr(0, 7) == "SUBSYS:") {
         istringstream iss(msg_str.substr(7));
         string name_subsys;

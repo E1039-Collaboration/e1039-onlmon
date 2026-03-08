@@ -5,8 +5,8 @@
 # You might use '-v' or '-V' options to select a non-standard e1039-core version.
 DIR_SCRIPT=$(dirname $(readlink -f $0))
 
-if [ $(hostname -s) != 'e1039prod1' -o $USER != 'kenichi' ] ; then
-    echo "!!ERROR!!  This script must be run on e1039prod1 by kenichi.  Abort."
+if [ $(hostname -s) != 'e1039trackcpu' -o $USER != 'kenichi' ] ; then
+    echo "!!ERROR!!  This script must be run on e1039trackcpu by kenichi.  Abort."
     exit
 fi
 
@@ -19,7 +19,7 @@ LAUNCHER=no
 N_EVT=0
 
 OPTIND=1
-while getopts ":v:V:osxdle:" OPT ; do
+while getopts ":v:V:osxXdle:" OPT ; do
     case $OPT in
         v ) E1039_CORE_VERSION=$OPTARG
             echo "  E1039_CORE version: $E1039_CORE_VERSION"

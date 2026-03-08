@@ -24,15 +24,15 @@ ExtractHodoInTime::ExtractHodoInTime(const std::string& name)
   : SubsysReco(name)
   , m_label("hodo")
   , m_list_det_name{
-    "H1T", "H1B", "H1L", "H1R", 
-    "H2T", "H2B", "H2L", "H2R", 
-    "H3T", "H3B", 
-    "H4Tu", "H4Td",   "H4Bu", "H4Bd", 
-    "H4Y1Ll", "H4Y1Lr", "H4Y1Rl", "H4Y1Rr", 
-    "H4Y2Ll", "H4Y2Lr", "H4Y2Rl", "H4Y2Rr", 
-    "DP1TL", "DP1TR", "DP1BL", "DP1BR",
-    "DP2TL", "DP2TR", "DP2BL", "DP2BR",
-    "BeforeInhNIM", "BeforeInhMatrix", "AfterInhNIM", "AfterInhMatrix"}
+      "H1T", "H1B", "H1L", "H1R", 
+      "H2T", "H2B", "H2L", "H2R", 
+      "H3T", "H3B", 
+      "H4Tu", "H4Td",   "H4Bu", "H4Bd", 
+      "H4Y1Ll", "H4Y1Lr", "H4Y1Rl", "H4Y1Rr", 
+      "H4Y2Ll", "H4Y2Lr", "H4Y2Rl", "H4Y2Rr", 
+      "DP1TL", "DP1TR", "DP1BL", "DP1BR",
+      "DP2TL", "DP2TR", "DP2BL", "DP2BR",
+      "BeforeInhNIM", "BeforeInhMatrix", "AfterInhNIM", "AfterInhMatrix"}
   , m_dir_out("result")
   , m_file(0)
 {
@@ -126,6 +126,7 @@ int ExtractHodoInTime::process_event(PHCompositeNode* topNode)
 
 int ExtractHodoInTime::End(PHCompositeNode* topNode)
 {
+  if (! m_file) return Fun4AllReturnCodes::EVENT_OK;
   int err_level_org = gErrorIgnoreLevel;
   gErrorIgnoreLevel = kWarning;
   //cout << "ExtractHodoInTime::End()" << endl;

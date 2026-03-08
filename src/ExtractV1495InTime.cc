@@ -113,6 +113,7 @@ int ExtractV1495InTime::process_event(PHCompositeNode* topNode)
 
 int ExtractV1495InTime::End(PHCompositeNode* topNode)
 {
+  if (! m_file) return Fun4AllReturnCodes::EVENT_OK;
   int err_level_org = gErrorIgnoreLevel;
   gErrorIgnoreLevel = kWarning;
   //cout << "ExtractV1495InTime::End()" << endl;

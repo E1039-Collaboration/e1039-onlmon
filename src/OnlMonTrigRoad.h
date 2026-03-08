@@ -2,7 +2,7 @@
 #define _ONL_MON_TRIG_ROAD__H_
 #include <interface_main/SQEvent.h>
 #include <interface_main/SQHitVector.h>
-#include "TriggerRoadset.h"
+#include <UtilAna/TrigRoadset.h>
 #include "OnlMonClient.h"
 
 class OnlMonTrigRoad: public OnlMonClient {
@@ -12,7 +12,7 @@ class OnlMonTrigRoad: public OnlMonClient {
   static const int N_DET = 8;
 
  private:
-  TriggerRoadset roadset;
+  UtilTrigger::TrigRoadset roadset;
 
   TH1* h1_cnt;
   TH1* h1_rs_cnt[4];
@@ -28,7 +28,7 @@ class OnlMonTrigRoad: public OnlMonClient {
   virtual ~OnlMonTrigRoad() {}
   OnlMonClient* Clone() { return new OnlMonTrigRoad(*this); }
 
-  TriggerRoadset* Roadset() { return &roadset; }
+  UtilTrigger::TrigRoadset* Roadset() { return &roadset; }
 
   int InitOnlMon(PHCompositeNode *topNode);
   int InitRunOnlMon(PHCompositeNode *topNode);
@@ -38,7 +38,7 @@ class OnlMonTrigRoad: public OnlMonClient {
   int DrawMonitor();
 
  private:
-  void CountFiredRoads(const int top0bot1, std::vector<SQHit*>* H1X, std::vector<SQHit*>* H2X, std::vector<SQHit*>* H3X, std::vector<SQHit*>* H4X, TriggerRoads* roads, TH1* h1_rs_cnt);
+  void CountFiredRoads(const int top0bot1, std::vector<SQHit*>* H1X, std::vector<SQHit*>* H2X, std::vector<SQHit*>* H3X, std::vector<SQHit*>* H4X, UtilTrigger::TrigRoads* roads, TH1* h1_rs_cnt);
   void SetDet();
 };
 

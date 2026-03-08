@@ -42,8 +42,7 @@ int OnlMonTrigEP::InitRunOnlMon(PHCompositeNode* topNode)
     int LBbot = sq_run->get_v1495_id(3);
     int ret = roadset.LoadConfig(LBtop, LBbot);
     if (Verbosity() >= 0) {
-      cout << "OnlMonTrigEP: LoadConfig(" << LBtop << ", " << LBbot << ")\n"
-           << roadset << endl;
+      cout << "OnlMonTrigEP: LoadConfig(" << LBtop << ", " << LBbot << endl;
     }
     if (ret != 0) {
       cout << "!!WARNING!!  OnlMonTrigEP::InitRunOnlMon():  roadset.LoadConfig returned " << ret << ".\n";
@@ -136,10 +135,10 @@ int OnlMonTrigEP::ProcessEventOnlMon(PHCompositeNode* topNode)
   std::vector<SQHit*>* vecH3B = UtilSQHit::FindTriggerHitsFast(evt, trig_hit_vec, list_det_id[5]);
   std::vector<SQHit*>* vecH4B = UtilSQHit::FindTriggerHitsFast(evt, trig_hit_vec, list_det_id[7]);
 
-  vector<TriggerRoad1*> roads_pos_top_f;
-  vector<TriggerRoad1*> roads_pos_bot_f;
-  vector<TriggerRoad1*> roads_neg_top_f;
-  vector<TriggerRoad1*> roads_neg_bot_f;
+  vector<UtilTrigger::TrigRoad*> roads_pos_top_f;
+  vector<UtilTrigger::TrigRoad*> roads_pos_bot_f;
+  vector<UtilTrigger::TrigRoad*> roads_neg_top_f;
+  vector<UtilTrigger::TrigRoad*> roads_neg_bot_f;
   FindFiredRoads(TOP   , vecH1T, vecH2T, vecH3T, vecH4T, roadset.PosTop(), roads_pos_top_f);
   FindFiredRoads(BOTTOM, vecH1B, vecH2B, vecH3B, vecH4B, roadset.PosBot(), roads_pos_bot_f);
   FindFiredRoads(TOP   , vecH1T, vecH2T, vecH3T, vecH4T, roadset.NegTop(), roads_neg_top_f);
@@ -347,7 +346,7 @@ void OnlMonTrigEP::SetDet()
   }
 }
 
-void OnlMonTrigEP::FindFiredRoads(const int top0bot1, vector<SQHit*>* H1X, vector<SQHit*>* H2X, vector<SQHit*>* H3X, vector<SQHit*>* H4X, TriggerRoads* roads, std::vector<TriggerRoad1*>& list_fired_roads)
+void OnlMonTrigEP::FindFiredRoads(const int top0bot1, vector<SQHit*>* H1X, vector<SQHit*>* H2X, vector<SQHit*>* H3X, vector<SQHit*>* H4X, UtilTrigger::TrigRoads* roads, std::vector<UtilTrigger::TrigRoad*>& list_fired_roads)
 {
   unordered_set<int> set_ele1;
   unordered_set<int> set_ele2;
@@ -379,7 +378,7 @@ void OnlMonTrigEP::FindFiredRoads(const int top0bot1, vector<SQHit*>* H1X, vecto
   }
 
   for (unsigned int ir = 0 ; ir < roads->GetNumRoads(); ir++) {
-    TriggerRoad1* road = roads->GetRoad(ir);
+    UtilTrigger::TrigRoad* road = roads->GetRoad(ir);
     if (set_ele1.find(road->H1X) != set_ele1.end() &&
         set_ele2.find(road->H2X) != set_ele2.end() &&
         set_ele3.find(road->H3X) != set_ele3.end() &&

@@ -2,7 +2,9 @@ export E1039_ONLMON=$(dirname $(readlink -f $BASH_SOURCE))
 DIR_BUILD=$E1039_ONLMON/build
 DIR_INST=$E1039_ONLMON/inst
 
+#E1039_CORE_VERSION=pr.158
 source /data2/e1039/this-e1039.sh
+#source /exp/seaquest/app/software/osg/software/e1039/this-e1039.sh
 export   LD_LIBRARY_PATH=$DIR_INST/lib:$LD_LIBRARY_PATH
 export ROOT_INCLUDE_PATH=$DIR_INST/include:$ROOT_INCLUDE_PATH
 
